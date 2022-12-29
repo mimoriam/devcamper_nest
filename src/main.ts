@@ -6,6 +6,10 @@
 // npm i cookie-parser
 // npm i -D @types/cookie-parser
 
+// nest g resource bootcamps
+
+// npm install @nestjs/swagger swagger-ui-express
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';

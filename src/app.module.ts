@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BootcampsModule } from './bootcamps/bootcamps.module';
 
 @Module({
   imports: [
@@ -27,6 +28,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         },
       }),
     }),
+
+    BootcampsModule,
   ],
   controllers: [],
   providers: [],
