@@ -11,6 +11,10 @@
 
 // npm i slugify
 
+// npm i node-geocoder
+// npm i -D @types/node-geocoder
+// npm i -D @types/geojson
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';

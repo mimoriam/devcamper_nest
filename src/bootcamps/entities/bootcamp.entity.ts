@@ -20,9 +20,12 @@ import {
   Min,
 } from 'class-validator';
 import slugify from 'slugify';
+import { Point } from 'geojson';
+import { geocoder } from '../utils/nodeGeocoder';
 
 @Entity({ name: 'bootcamps' })
 @Index(['name', 'email'], { unique: true, fulltext: true })
+@Index(['location'], { spatial: true })
 export class Bootcamp {
   @PrimaryColumn()
   id: string;
@@ -70,13 +73,13 @@ export class Bootcamp {
   @Column({ default: '' })
   slug: string;
 
-  // @Column({
-  //   type: "geography",
-  //   spatialFeatureType: "Point",
-  //   srid: 4326,
-  //   nullable: true,
-  // })
-  // location: Point;
+  @Column({
+    type: 'geography',
+    spatialFeatureType: 'Point',
+    srid: 4326,
+    nullable: true,
+  })
+  location: Point;
 
   @Column({ name: 'formatted_address', nullable: true })
   @IsOptional()
@@ -148,5 +151,21 @@ export class Bootcamp {
   @BeforeUpdate()
   createSlug() {
     this.slug = slugify(this.name, { lower: true });
+  }
+
+  @BeforeInsert()
+  async createLoc() {
+    const loc = await geocoder.geocode(this.address);
+
+    this.location = {
+      type: 'Point',
+      coordinates: [loc[0].longitude, loc[0].latitude],
+    };
+    this.formattedAddress = loc[0].formattedAddress;
+    this.street = loc[0].streetName;
+    this.city = loc[0].city;
+    this.state = loc[0].stateCode;
+    this.zipcode = loc[0].zipcode;
+    this.country = loc[0].countryCode;
   }
 }
