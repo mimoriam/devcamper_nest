@@ -4,6 +4,8 @@ import { UpdateBootcampDto } from './dto/update-bootcamp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bootcamp } from './entities/bootcamp.entity';
 import { Repository } from 'typeorm';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class BootcampsService {
@@ -58,5 +60,37 @@ export class BootcampsService {
     });
 
     return this.bootcampRepo.remove(bootcamp);
+  }
+
+  async seedUpBootcamp() {
+    const bootcamps = JSON.parse(
+      fs.readFileSync(
+        `${path.join(__dirname, '../../_data')}/bootcamps.json`,
+        'utf-8',
+      ),
+    );
+
+    const bootcampEntities = this.bootcampRepo.create(bootcamps);
+
+    await this.bootcampRepo
+      .createQueryBuilder()
+      .insert()
+      .into(Bootcamp)
+      .values(bootcampEntities)
+      .execute();
+
+    return {
+      success: true,
+      message: 'Bootcamps inserted~',
+    };
+  }
+
+  async seedDownBootcamp() {
+    await this.bootcampRepo.clear();
+
+    return {
+      success: true,
+      message: 'Bootcamps deleted!',
+    };
   }
 }

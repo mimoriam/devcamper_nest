@@ -15,6 +15,8 @@
 // npm i -D @types/node-geocoder
 // npm i -D @types/geojson
 
+// npm install nestjs-paginate
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
