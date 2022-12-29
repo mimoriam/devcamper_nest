@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BootcampsModule } from './bootcamps/bootcamps.module';
 import { CoursesModule } from './courses/courses.module';
+import { CourseSubscriber } from './courses/entities/course.entity';
 
 @Module({
   imports: [
