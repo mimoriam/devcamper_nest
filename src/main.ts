@@ -17,6 +17,8 @@
 
 // npm install nestjs-paginate
 
+// npm i -D @types/multer
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';

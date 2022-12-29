@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { BootcampsService } from './bootcamps.service';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
@@ -16,6 +19,9 @@ import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { CreateCourseDto } from '../courses/dto/create-course.dto';
 import { Course } from '../courses/entities/course.entity';
 import { CoursesService } from '../courses/courses.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { Request } from 'express';
 
 @Controller('api/v1/bootcamps')
 @ApiTags('bootcamps')
@@ -52,6 +58,42 @@ export class BootcampsController {
   @Get('/down')
   async seedDownBootcamp() {
     return this.bootcampsService.seedDownBootcamp();
+  }
+
+  @Post(':bootcampId/multer')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/',
+        filename(req: Request, file: Express.Multer.File, callback) {
+          const ext = file.mimetype.split('/')[1];
+          callback(null, `user-${req.params.bootcampId}-${Date.now()}.${ext}`);
+        },
+      }),
+      limits: {
+        files: 1,
+        fileSize: 5 * 10 * 10 * 10 * 10 * 10 * 10, // 5 mb in bytes
+      },
+      fileFilter(req: Request, file: Express.Multer.File, callback) {
+        if (file.mimetype.startsWith('image')) {
+          callback(null, true);
+        } else {
+          callback(new Error(`Please upload an image file`), false);
+        }
+      },
+    }),
+  )
+  async uploadFile(
+    @Param('bootcampId') bootcampId: string,
+    @UploadedFile()
+    file: Express.Multer.File,
+  ): Promise<Bootcamp> {
+    return this.bootcampsService.uploadFile(bootcampId, file);
+  }
+
+  @Patch(':bootcampId/removeMulter')
+  async deleteUpload(@Param('bootcampId') bootcampId: string) {
+    return this.bootcampsService.deleteUpload(bootcampId);
   }
 
   @Get(':id')

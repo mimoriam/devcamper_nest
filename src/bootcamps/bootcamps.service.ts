@@ -30,6 +30,48 @@ export class BootcampsService {
     });
   }
 
+  async uploadFile(
+    bootcampId: string,
+    file: Express.Multer.File,
+  ): Promise<Bootcamp> {
+    const bootcamp = await this.bootcampRepo.preload({
+      id: bootcampId,
+      photo: file.filename,
+    });
+
+    if (!bootcamp) {
+      throw new NotFoundException(`Bootcamp #${bootcampId} not found`);
+    }
+
+    return this.bootcampRepo.save(bootcamp);
+  }
+
+  async deleteUpload(bootcampId: string) {
+    const bootcamp = await this.bootcampRepo.findOne({
+      where: {
+        id: bootcampId,
+      },
+    });
+
+    if (!bootcamp) {
+      throw new NotFoundException(`Bootcamp #${bootcampId} not found`);
+    }
+
+    fs.unlink(`./uploads/${bootcamp.photo}`, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+
+    await this.bootcampRepo.update(bootcampId, {
+      photo: 'no_photo.jpg',
+    });
+
+    return {
+      message: 'Photo deleted',
+    };
+  }
+
   async findOne(id: string): Promise<Bootcamp> {
     const bootcamp = await this.bootcampRepo.findOne({
       where: {
