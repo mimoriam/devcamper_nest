@@ -6,6 +6,8 @@ import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
 import { Bootcamp } from '../bootcamps/entities/bootcamp.entity';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class CoursesService {
@@ -35,6 +37,7 @@ export class CoursesService {
     return await this.courseRepo
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.bootcamp', 'bootcamp')
+      .where('course.bootcamp LIKE :bootcampId', { bootcampId })
       .select()
       .getMany();
   }
@@ -98,5 +101,37 @@ export class CoursesService {
     });
 
     return this.courseRepo.remove(course);
+  }
+
+  async seedUpCourse() {
+    const courses = JSON.parse(
+      fs.readFileSync(
+        `${path.join(__dirname, '../../_data')}/courses.json`,
+        'utf-8',
+      ),
+    );
+
+    const courseEntities = this.courseRepo.create(courses);
+
+    await this.courseRepo
+      .createQueryBuilder()
+      .insert()
+      .into(Course)
+      .values(courseEntities)
+      .execute();
+
+    return {
+      success: true,
+      message: 'Courses inserted ~!',
+    };
+  }
+
+  async seedDownCourse() {
+    await this.courseRepo.clear();
+
+    return {
+      success: true,
+      message: 'Courses deleted !!',
+    };
   }
 }

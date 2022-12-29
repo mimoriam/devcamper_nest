@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CreateCourseDto } from './dto/create-course.dto';
+// import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Course } from './entities/course.entity';
@@ -27,6 +27,16 @@ export class CoursesController {
   @Get()
   async findAll(@Paginate() query: PaginateQuery): Promise<Paginated<Course>> {
     return this.coursesService.findAll(query);
+  }
+
+  @Get('/up')
+  async seedUpCourse() {
+    return this.coursesService.seedUpCourse();
+  }
+
+  @Get('/down')
+  async seedDownCourse() {
+    return this.coursesService.seedDownCourse();
   }
 
   @Get(':id')
