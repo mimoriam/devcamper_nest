@@ -7,8 +7,9 @@
 // npm i -D @types/cookie-parser
 
 // nest g resource bootcamps
-
 // npm install @nestjs/swagger swagger-ui-express
+
+// npm i slugify
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

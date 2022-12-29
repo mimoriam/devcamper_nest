@@ -1,4 +1,6 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -17,6 +19,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import slugify from 'slugify';
 
 @Entity({ name: 'bootcamps' })
 @Index(['name', 'email'], { unique: true, fulltext: true })
@@ -140,4 +143,10 @@ export class Bootcamp {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  createSlug() {
+    this.slug = slugify(this.name, { lower: true });
+  }
 }
