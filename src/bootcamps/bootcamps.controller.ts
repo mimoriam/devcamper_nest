@@ -12,15 +12,23 @@ import { CreateBootcampDto } from './dto/create-bootcamp.dto';
 import { UpdateBootcampDto } from './dto/update-bootcamp.dto';
 import { Bootcamp } from './entities/bootcamp.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @Controller('api/v1/bootcamps')
 @ApiTags('bootcamps')
 export class BootcampsController {
   constructor(private readonly bootcampsService: BootcampsService) {}
 
+  // @Get()
+  // async findAll(): Promise<Bootcamp[]> {
+  //   return this.bootcampsService.findAll();
+  // }
+
   @Get()
-  async findAll(): Promise<Bootcamp[]> {
-    return this.bootcampsService.findAll();
+  async findAll(
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<Bootcamp>> {
+    return this.bootcampsService.findAll(query);
   }
 
   @Get('/up')

@@ -6,6 +6,7 @@ import { Bootcamp } from './entities/bootcamp.entity';
 import { Repository } from 'typeorm';
 import * as path from 'path';
 import * as fs from 'fs';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class BootcampsService {
@@ -14,8 +15,19 @@ export class BootcampsService {
     private readonly bootcampRepo: Repository<Bootcamp>,
   ) {}
 
-  async findAll(): Promise<Bootcamp[]> {
-    return this.bootcampRepo.find();
+  // async findAll(): Promise<Bootcamp[]> {
+  //   return this.bootcampRepo.find();
+  // }
+
+  async findAll(query: PaginateQuery): Promise<Paginated<Bootcamp>> {
+    return paginate(query, this.bootcampRepo, {
+      sortableColumns: ['id', 'name'],
+      nullSort: 'last',
+      searchableColumns: ['name'],
+      defaultLimit: 2,
+      maxLimit: 2,
+      relations: [],
+    });
   }
 
   async findOne(id: string): Promise<Bootcamp> {
