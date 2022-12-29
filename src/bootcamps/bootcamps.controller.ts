@@ -10,36 +10,39 @@ import {
 import { BootcampsService } from './bootcamps.service';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
 import { UpdateBootcampDto } from './dto/update-bootcamp.dto';
+import { Bootcamp } from './entities/bootcamp.entity';
 
-@Controller('bootcamps')
+@Controller('api/v1/bootcamps')
 export class BootcampsController {
   constructor(private readonly bootcampsService: BootcampsService) {}
 
-  @Post()
-  create(@Body() createBootcampDto: CreateBootcampDto) {
-    return this.bootcampsService.create(createBootcampDto);
-  }
-
   @Get()
-  findAll() {
+  async findAll(): Promise<Bootcamp[]> {
     return this.bootcampsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bootcampsService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<Bootcamp> {
+    return this.bootcampsService.findOne(id);
+  }
+
+  @Post()
+  async create(
+    @Body() createBootcampDto: CreateBootcampDto,
+  ): Promise<Bootcamp> {
+    return this.bootcampsService.create(createBootcampDto);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateBootcampDto: UpdateBootcampDto,
-  ) {
-    return this.bootcampsService.update(+id, updateBootcampDto);
+  ): Promise<Bootcamp> {
+    return this.bootcampsService.update(id, updateBootcampDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bootcampsService.remove(+id);
+  async remove(@Param('id') id: string): Promise<Bootcamp> {
+    return this.bootcampsService.remove(id);
   }
 }

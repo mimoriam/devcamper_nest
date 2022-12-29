@@ -75,27 +75,27 @@ export class Bootcamp {
   // })
   // location: Point;
 
-  @Column({ name: 'formatted_address' })
+  @Column({ name: 'formatted_address', nullable: true })
   @IsOptional()
   formattedAddress: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsOptional()
   street: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsOptional()
   city: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsOptional()
   state: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsOptional()
   zipcode: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsOptional()
   country: string;
 
