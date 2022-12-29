@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryColumn,
 } from 'typeorm';
 import {
@@ -22,6 +23,7 @@ import {
 import slugify from 'slugify';
 import { Point } from 'geojson';
 import { geocoder } from '../utils/nodeGeocoder';
+import { Course } from '../../courses/entities/course.entity';
 
 @Entity({ name: 'bootcamps' })
 @Index(['name', 'email'], { unique: true, fulltext: true })
@@ -146,6 +148,11 @@ export class Bootcamp {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @OneToMany(() => Course, (course) => course.bootcamp, {
+    cascade: true,
+  })
+  courses: Course[];
 
   @BeforeInsert()
   @BeforeUpdate()

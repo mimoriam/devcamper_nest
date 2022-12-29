@@ -13,11 +13,17 @@ import { UpdateBootcampDto } from './dto/update-bootcamp.dto';
 import { Bootcamp } from './entities/bootcamp.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { CreateCourseDto } from '../courses/dto/create-course.dto';
+import { Course } from '../courses/entities/course.entity';
+import { CoursesService } from '../courses/courses.service';
 
 @Controller('api/v1/bootcamps')
 @ApiTags('bootcamps')
 export class BootcampsController {
-  constructor(private readonly bootcampsService: BootcampsService) {}
+  constructor(
+    private readonly bootcampsService: BootcampsService,
+    private readonly coursesService: CoursesService,
+  ) {}
 
   // @Get()
   // async findAll(): Promise<Bootcamp[]> {
@@ -29,6 +35,13 @@ export class BootcampsController {
     @Paginate() query: PaginateQuery,
   ): Promise<Paginated<Bootcamp>> {
     return this.bootcampsService.findAll(query);
+  }
+
+  @Get(':bootcampId/courses')
+  async findCoursesFromBootcamp(
+    @Param('bootcampId') bootcampId: string,
+  ): Promise<Course[]> {
+    return this.coursesService.findCoursesFromBootcamp(bootcampId);
   }
 
   @Get('/up')
@@ -51,6 +64,17 @@ export class BootcampsController {
     @Body() createBootcampDto: CreateBootcampDto,
   ): Promise<Bootcamp> {
     return this.bootcampsService.create(createBootcampDto);
+  }
+
+  @Post(':bootcampId/courses')
+  async createCourseFromBootcamp(
+    @Param('bootcampId') bootcampId: string,
+    @Body() createCourseDto: CreateCourseDto,
+  ): Promise<Course> {
+    return this.coursesService.createCourseFromBootcamp(
+      bootcampId,
+      createCourseDto,
+    );
   }
 
   @Patch(':id')

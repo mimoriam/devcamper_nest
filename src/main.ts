@@ -35,7 +35,7 @@ async function bootstrap() {
       enableDebugMessages: true,
       whitelist: true,
       transform: true,
-      forbidNonWhitelisted: true,
+      // forbidNonWhitelisted: true,
       transformOptions: {
         enableImplicitConversion: true,
       },

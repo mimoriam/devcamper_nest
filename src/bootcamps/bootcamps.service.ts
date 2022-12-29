@@ -26,13 +26,16 @@ export class BootcampsService {
       searchableColumns: ['name'],
       defaultLimit: 2,
       maxLimit: 2,
-      relations: [],
+      relations: ['courses'],
     });
   }
 
   async findOne(id: string): Promise<Bootcamp> {
-    const bootcamp = await this.bootcampRepo.findOneBy({
-      id: id,
+    const bootcamp = await this.bootcampRepo.findOne({
+      where: {
+        id: id,
+      },
+      relations: ['courses'],
     });
 
     if (!bootcamp) {
