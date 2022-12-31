@@ -19,6 +19,11 @@
 
 // npm i -D @types/multer
 
+// Authentication starts here:
+// nest g resource users
+// npm i bcrypt
+// npm i -D @types/bcrypt
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
