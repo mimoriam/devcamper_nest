@@ -10,17 +10,21 @@ import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Auth } from './decorators/auth.decrator';
+import { AuthType } from './enums/auth-type.enum';
 
 @Controller('api/v1/auth')
 @ApiTags('authentication')
 export class AuthenticationController {
   constructor(private readonly authService: AuthenticationService) {}
 
+  @Auth(AuthType.None)
   @Post('register')
   async signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.signUp(signUpDto);
   }
 
+  @Auth(AuthType.None)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(

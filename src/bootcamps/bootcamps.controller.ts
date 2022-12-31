@@ -22,6 +22,8 @@ import { CoursesService } from '../courses/courses.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Request } from 'express';
+import { Auth } from '../iam/authentication/decorators/auth.decrator';
+import { AuthType } from '../iam/authentication/enums/auth-type.enum';
 
 @Controller('api/v1/bootcamps')
 @ApiTags('bootcamps')
@@ -36,6 +38,7 @@ export class BootcampsController {
   //   return this.bootcampsService.findAll();
   // }
 
+  @Auth(AuthType.None)
   @Get()
   async findAll(
     @Paginate() query: PaginateQuery,
@@ -43,6 +46,7 @@ export class BootcampsController {
     return this.bootcampsService.findAll(query);
   }
 
+  @Auth(AuthType.None)
   @Get(':bootcampId/courses')
   async findCoursesFromBootcamp(
     @Param('bootcampId') bootcampId: string,

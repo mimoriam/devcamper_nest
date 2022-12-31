@@ -13,6 +13,8 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Course } from './entities/course.entity';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { Auth } from '../iam/authentication/decorators/auth.decrator';
+import { AuthType } from '../iam/authentication/enums/auth-type.enum';
 
 @Controller('api/v1/courses')
 @ApiTags('courses')
@@ -24,6 +26,7 @@ export class CoursesController {
   //   return this.coursesService.findAll();
   // }
 
+  @Auth(AuthType.None)
   @Get()
   async findAll(@Paginate() query: PaginateQuery): Promise<Paginated<Course>> {
     return this.coursesService.findAll(query);
@@ -39,6 +42,7 @@ export class CoursesController {
     return this.coursesService.seedDownCourse();
   }
 
+  @Auth(AuthType.None)
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Course> {
     return this.coursesService.findOne(id);
