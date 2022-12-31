@@ -33,6 +33,8 @@
 // nest g class iam/authentication/dto/sign-up.dto --no-spec
 // nest g class iam/authentication/dto/sign-in.dto --no-spec
 
+// npm i @nestjs/jwt
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
