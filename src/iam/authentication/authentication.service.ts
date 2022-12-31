@@ -94,6 +94,18 @@ export class AuthenticationService {
     };
   }
 
+  async getMe(user: ActiveUserData) {
+    const user_in_db = await this.userRepository.findOneBy({
+      id: user.sub.toString(),
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(`User does not exist`);
+    }
+
+    return user_in_db;
+  }
+
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
       const { sub, refreshTokenId } = await this.jwtService.verifyAsync<

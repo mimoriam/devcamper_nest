@@ -1,11 +1,13 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Post,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -15,6 +17,8 @@ import { Auth } from './decorators/auth.decrator';
 import { AuthType } from './enums/auth-type.enum';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Response } from 'express';
+import { ActiveUser } from '../decorators/active-user.decorator';
+import { ActiveUserData } from '../interfaces/active-user-data.interface';
 
 @Controller('api/v1/auth')
 @ApiTags('authentication')
@@ -85,5 +89,12 @@ export class AuthenticationController {
     return {
       message: 'Logged out!',
     };
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.Bearer)
+  @Get('me')
+  async getMe(@ActiveUser() user: ActiveUserData) {
+    return this.authService.getMe(user);
   }
 }

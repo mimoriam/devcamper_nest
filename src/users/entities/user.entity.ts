@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { IsEmail, IsString, Length } from 'class-validator';
+import { Exclude } from 'class-transformer';
 
 export enum RoleType {
   USER = 'user',
@@ -39,6 +40,7 @@ export class User {
   // Instead of select: false, use class-transformer's @Exclude()
   // https://docs.nestjs.com/techniques/serialization
   // @Column({ select: false })
+  @Exclude()
   @Column()
   @Length(5)
   password: string;
