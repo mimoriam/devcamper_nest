@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -13,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Auth } from './decorators/auth.decrator';
 import { AuthType } from './enums/auth-type.enum';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { Response } from 'express';
 
 @Controller('api/v1/auth')
 @ApiTags('authentication')
@@ -32,15 +34,28 @@ export class AuthenticationController {
     @Res({ passthrough: true }) response: Response,
     @Body() signInDto: SignInDto,
   ) {
-    return this.authService.signIn(signInDto);
+    // This following approach is to send tokens without cookies:
+    // return this.authService.signIn(signInDto);
 
     // The following approach is to send cookies:
-    // const accessToken = await this.authService.signIn(signInDto);
-    // response.cookie('accessToken', accessToken, {
-    //   secure: true,
-    //   httpOnly: true,
-    //   sameSite: true,
-    // });
+    const { accessToken, refreshToken } = await this.authService.signIn(
+      signInDto,
+    );
+    response.cookie('accessToken', accessToken, {
+      // secure: true,
+      httpOnly: true,
+      sameSite: true,
+    });
+    response.cookie('refreshToken', refreshToken, {
+      // secure: true,
+      httpOnly: true,
+      sameSite: true,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   @Auth(AuthType.Bearer)
@@ -48,5 +63,27 @@ export class AuthenticationController {
   @Post('refresh-token')
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshToken(refreshTokenDto);
+  }
+
+  @Auth(AuthType.Bearer)
+  @Get('logout')
+  async logOut(@Res({ passthrough: true }) response: Response) {
+    response.cookie('accessToken', 'none', {
+      expires: new Date(Date.now() + 10 * 1000),
+      secure: true,
+      httpOnly: true,
+      sameSite: true,
+    });
+
+    response.cookie('refreshToken', 'none', {
+      expires: new Date(Date.now() + 10 * 1000),
+      secure: true,
+      httpOnly: true,
+      sameSite: true,
+    });
+
+    return {
+      message: 'Logged out!',
+    };
   }
 }

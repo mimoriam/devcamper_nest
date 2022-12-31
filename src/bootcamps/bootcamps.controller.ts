@@ -62,7 +62,6 @@ export class BootcampsController {
   @Auth(AuthType.Bearer)
   @Get('/up')
   async seedUpBootcamp(@ActiveUser() user: ActiveUserData) {
-    console.log(user);
     return this.bootcampsService.seedUpBootcamp(user);
   }
 
