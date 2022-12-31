@@ -16,6 +16,10 @@ import { ConfigType } from '@nestjs/config';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { randomUUID } from 'crypto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import {
+  InvalidateRefreshTokenError,
+  RefreshTokenIdsStorage,
+} from './refresh-token-ids.storage';
 
 @Injectable()
 export class AuthenticationService {
@@ -26,6 +30,7 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguation: ConfigType<typeof jwtConfig>,
+    private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -82,6 +87,7 @@ export class AuthenticationService {
       }),
     ]);
 
+    await this.refreshTokenIdsStorage.insert(parseInt(user.id), refreshTokenId);
     return {
       accessToken,
       refreshToken,
@@ -90,8 +96,8 @@ export class AuthenticationService {
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
-      const { sub } = await this.jwtService.verifyAsync<
-        Pick<ActiveUserData, 'sub'>
+      const { sub, refreshTokenId } = await this.jwtService.verifyAsync<
+        Pick<ActiveUserData, 'sub'> & { refreshTokenId: string }
       >(refreshTokenDto.refreshToken, {
         secret: this.jwtConfiguation.secret,
         audience: this.jwtConfiguation.audience,
@@ -102,8 +108,23 @@ export class AuthenticationService {
         id: sub.toString(),
       });
 
+      const isValid = await this.refreshTokenIdsStorage.validate(
+        parseInt(user.id),
+        refreshTokenId,
+      );
+
+      if (isValid) {
+        await this.refreshTokenIdsStorage.invalidate(parseInt(user.id));
+      } else {
+        throw new Error(`Refresh token is invalid`);
+      }
+
       return await this.generateTokens(user);
     } catch (err) {
+      if (err instanceof InvalidateRefreshTokenError) {
+        // Take action: Notify user that his refresh token may have been stolen
+        throw new UnauthorizedException(`Access denied`);
+      }
       throw new UnauthorizedException();
     }
   }

@@ -38,6 +38,10 @@
 // nest g guard iam/authentication/guards/access-token
 // nest g guard iam/authentication/guards/authentication
 
+// This is for refresh token rotation:
+// npm i --save ioredis
+// nest g class iam/authentication/refresh-token-ids.storage
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
