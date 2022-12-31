@@ -8,6 +8,7 @@ import { Bootcamp } from '../bootcamps/entities/bootcamp.entity';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
 
 @Injectable()
 export class CoursesService {
@@ -66,6 +67,7 @@ export class CoursesService {
   async createCourseFromBootcamp(
     bootcampId: string,
     createCourseDto: CreateCourseDto,
+    user: ActiveUserData
   ): Promise<Course> {
     const bootcamp = await this.bootcampRepo.findOneBy({
       id: bootcampId,

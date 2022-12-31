@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
 import { UpdateBootcampDto } from './dto/update-bootcamp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import * as path from 'path';
 import * as fs from 'fs';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
 
 @Injectable()
 export class BootcampsService {
@@ -33,6 +34,7 @@ export class BootcampsService {
   async uploadFile(
     bootcampId: string,
     file: Express.Multer.File,
+    user: ActiveUserData,
   ): Promise<Bootcamp> {
     const bootcamp = await this.bootcampRepo.preload({
       id: bootcampId,
@@ -46,7 +48,7 @@ export class BootcampsService {
     return this.bootcampRepo.save(bootcamp);
   }
 
-  async deleteUpload(bootcampId: string) {
+  async deleteUpload(bootcampId: string, user: ActiveUserData) {
     const bootcamp = await this.bootcampRepo.findOne({
       where: {
         id: bootcampId,
@@ -87,7 +89,10 @@ export class BootcampsService {
     return bootcamp;
   }
 
-  async create(createBootcampDto: CreateBootcampDto): Promise<Bootcamp> {
+  async create(
+    createBootcampDto: CreateBootcampDto,
+    user: ActiveUserData,
+  ): Promise<Bootcamp> {
     const bootcamp = this.bootcampRepo.create({
       ...createBootcampDto,
     });
@@ -98,6 +103,7 @@ export class BootcampsService {
   async update(
     id: string,
     updateBootcampDto: UpdateBootcampDto,
+    user: ActiveUserData,
   ): Promise<Bootcamp> {
     const bootcamp = await this.bootcampRepo.preload({
       id: id,
@@ -111,7 +117,7 @@ export class BootcampsService {
     return this.bootcampRepo.save(bootcamp);
   }
 
-  async remove(id: string): Promise<Bootcamp> {
+  async remove(id: string, user: ActiveUserData): Promise<Bootcamp> {
     const bootcamp = await this.bootcampRepo.findOneBy({
       id: id,
     });
@@ -119,7 +125,7 @@ export class BootcampsService {
     return this.bootcampRepo.remove(bootcamp);
   }
 
-  async seedUpBootcamp() {
+  async seedUpBootcamp(user: ActiveUserData) {
     const bootcamps = JSON.parse(
       fs.readFileSync(
         `${path.join(__dirname, '../../_data')}/bootcamps.json`,
@@ -142,7 +148,7 @@ export class BootcampsService {
     };
   }
 
-  async seedDownBootcamp() {
+  async seedDownBootcamp(user: ActiveUserData) {
     await this.bootcampRepo.clear();
 
     return {

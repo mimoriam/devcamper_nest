@@ -32,11 +32,13 @@ export class CoursesController {
     return this.coursesService.findAll(query);
   }
 
+  @Auth(AuthType.None)
   @Get('/up')
   async seedUpCourse() {
     return this.coursesService.seedUpCourse();
   }
 
+  @Auth(AuthType.None)
   @Get('/down')
   async seedDownCourse() {
     return this.coursesService.seedDownCourse();

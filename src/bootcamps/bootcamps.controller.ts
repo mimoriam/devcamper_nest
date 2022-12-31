@@ -8,7 +8,6 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { BootcampsService } from './bootcamps.service';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
@@ -24,6 +23,12 @@ import { diskStorage } from 'multer';
 import { Request } from 'express';
 import { Auth } from '../iam/authentication/decorators/auth.decrator';
 import { AuthType } from '../iam/authentication/enums/auth-type.enum';
+import { ActiveUser } from '../iam/decorators/active-user.decorator';
+import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
+
+// Note: To get the token in the controller, use: @ActiveUser() user: ActiveUserData
+// Note: To get the req.user in service, use Scopes:
+// https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
 
 @Controller('api/v1/bootcamps')
 @ApiTags('bootcamps')
@@ -54,16 +59,19 @@ export class BootcampsController {
     return this.coursesService.findCoursesFromBootcamp(bootcampId);
   }
 
+  @Auth(AuthType.Bearer)
   @Get('/up')
-  async seedUpBootcamp() {
-    return this.bootcampsService.seedUpBootcamp();
+  async seedUpBootcamp(@ActiveUser() user: ActiveUserData) {
+    return this.bootcampsService.seedUpBootcamp(user);
   }
 
+  @Auth(AuthType.Bearer)
   @Get('/down')
-  async seedDownBootcamp() {
-    return this.bootcampsService.seedDownBootcamp();
+  async seedDownBootcamp(@ActiveUser() user: ActiveUserData) {
+    return this.bootcampsService.seedDownBootcamp(user);
   }
 
+  @Auth(AuthType.Bearer)
   @Post(':bootcampId/multer')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -91,48 +99,65 @@ export class BootcampsController {
     @Param('bootcampId') bootcampId: string,
     @UploadedFile()
     file: Express.Multer.File,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<Bootcamp> {
-    return this.bootcampsService.uploadFile(bootcampId, file);
+    return this.bootcampsService.uploadFile(bootcampId, file, user);
   }
 
+  @Auth(AuthType.Bearer)
   @Patch(':bootcampId/removeMulter')
-  async deleteUpload(@Param('bootcampId') bootcampId: string) {
-    return this.bootcampsService.deleteUpload(bootcampId);
+  async deleteUpload(
+    @Param('bootcampId') bootcampId: string,
+    @ActiveUser() user: ActiveUserData,
+  ) {
+    return this.bootcampsService.deleteUpload(bootcampId, user);
   }
 
+  @Auth(AuthType.None)
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Bootcamp> {
     return this.bootcampsService.findOne(id);
   }
 
+  @Auth(AuthType.Bearer)
   @Post()
   async create(
     @Body() createBootcampDto: CreateBootcampDto,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<Bootcamp> {
-    return this.bootcampsService.create(createBootcampDto);
+    return this.bootcampsService.create(createBootcampDto, user);
   }
 
+  @Auth(AuthType.Bearer)
   @Post(':bootcampId/courses')
   async createCourseFromBootcamp(
     @Param('bootcampId') bootcampId: string,
     @Body() createCourseDto: CreateCourseDto,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<Course> {
     return this.coursesService.createCourseFromBootcamp(
       bootcampId,
       createCourseDto,
+      user,
     );
   }
 
+  @Auth(AuthType.Bearer)
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateBootcampDto: UpdateBootcampDto,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<Bootcamp> {
-    return this.bootcampsService.update(id, updateBootcampDto);
+    return this.bootcampsService.update(id, updateBootcampDto, user);
   }
 
+  @Auth(AuthType.Bearer)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<Bootcamp> {
-    return this.bootcampsService.remove(id);
+  async remove(
+    @Param('id') id: string,
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<Bootcamp> {
+    return this.bootcampsService.remove(id, user);
   }
 }
