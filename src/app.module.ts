@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BootcampsModule } from './bootcamps/bootcamps.module';
 import { CoursesModule } from './courses/courses.module';
 import { UsersModule } from './users/users.module';
+import { IamModule } from './iam/iam.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from './users/users.module';
     BootcampsModule,
     CoursesModule,
     UsersModule,
+    IamModule,
   ],
   controllers: [],
   providers: [],

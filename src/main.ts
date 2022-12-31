@@ -24,6 +24,10 @@
 // npm i bcrypt
 // npm i -D @types/bcrypt
 
+// nest g module iam
+// nest g service iam/hashing
+// nest g service iam/hashing/bcrypt --flat
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
