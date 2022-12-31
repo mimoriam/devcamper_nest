@@ -14,6 +14,8 @@ import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { randomUUID } from 'crypto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -63,22 +65,61 @@ export class AuthenticationService {
       throw new UnauthorizedException(`Password does not match`);
     }
 
-    const accessToken = await this.jwtService.signAsync(
+    return await this.generateTokens(user);
+  }
+
+  public async generateTokens(user: User) {
+    const refreshTokenId = randomUUID();
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signToken<Partial<ActiveUserData>>(
+        user.id,
+        this.jwtConfiguation.accessTokenTtl,
+        { email: user.email, role: user.role },
+      ),
+      this.signToken(user.id, this.jwtConfiguation.refreshTokenTtl, {
+        refreshTokenId,
+      }),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const { sub } = await this.jwtService.verifyAsync<
+        Pick<ActiveUserData, 'sub'>
+      >(refreshTokenDto.refreshToken, {
+        secret: this.jwtConfiguation.secret,
+        audience: this.jwtConfiguation.audience,
+        issuer: this.jwtConfiguation.issuer,
+      });
+
+      const user = await this.userRepository.findOneByOrFail({
+        id: sub.toString(),
+      });
+
+      return await this.generateTokens(user);
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  private async signToken<T>(userId: string, expiresIn: number, payload: T) {
+    return await this.jwtService.signAsync(
       {
-        sub: user.id,
-        email: user.email,
-        role: user.role,
+        sub: userId,
+        ...payload,
       },
       {
         audience: this.jwtConfiguation.audience,
         issuer: this.jwtConfiguation.issuer,
         secret: this.jwtConfiguation.secret,
-        expiresIn: this.jwtConfiguation.accessTokenTtl,
+        expiresIn,
       },
     );
-
-    return {
-      accessToken,
-    };
   }
 }
