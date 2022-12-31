@@ -28,6 +28,11 @@
 // nest g service iam/hashing
 // nest g service iam/hashing/bcrypt --flat
 
+// nest g service iam/authentication
+// nest g controller iam/authentication
+// nest g class iam/authentication/dto/sign-up.dto --no-spec
+// nest g class iam/authentication/dto/sign-in.dto --no-spec
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
