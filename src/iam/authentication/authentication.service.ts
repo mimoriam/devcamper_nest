@@ -26,6 +26,7 @@ import { createTransport } from 'nodemailer';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { ResetPassDto } from './dto/reset-pass.dto';
+import { ConfirmEmailQueryDto } from './dto/confirm-email-query.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthenticationService {
@@ -49,7 +50,41 @@ export class AuthenticationService {
       user.role = signUpDto.role;
       user.password = await this.hashingService.hash(signUpDto.password);
 
+      // grab token and send to email:
+      const confirmEmailToken = await this.generateEmailConfirmToken(user);
+
+      // Create reset url
+      const confirmEmailURL = `${this.req.protocol}://${this.req.get(
+        'host',
+      )}/api/v1/auth/confirmemail?token=${confirmEmailToken}`;
+
+      const message = `You are receiving this email because you need to confirm your email address. Please make a GET request to: \n\n ${confirmEmailURL}`;
+
       await this.userRepository.save(user);
+
+      const transporter = createTransport({
+        host: '0.0.0.0',
+        port: 1025,
+      });
+
+      try {
+        await transporter.sendMail({
+          from: 'from@example.com',
+          to: signUpDto.email,
+          subject: 'Email Confirm token',
+          text: message,
+          html: `Click <a href="${confirmEmailURL}">here</a> to reset your password!`,
+        });
+
+        return {
+          message: 'Confirmation Email Sent!',
+        };
+      } catch (err) {
+        user.confirmEmailToken = null;
+        user.isEmailConfirmed = false;
+        await this.userRepository.save(user);
+        throw new UnauthorizedException(`Email could not be sent`);
+      }
     } catch (err) {
       const pgUniqueViolationErrorCode = '23505';
       if (err.code === pgUniqueViolationErrorCode) {
@@ -57,6 +92,45 @@ export class AuthenticationService {
       }
       throw err;
     }
+  }
+
+  async confirmEmail(confirmEmailQueryDto: ConfirmEmailQueryDto) {
+    const token = confirmEmailQueryDto.token;
+
+    if (!token) {
+      throw new UnauthorizedException(`Invalid`);
+    }
+
+    console.log(token);
+
+    const splitToken = token.split('.')[0];
+    console.log(splitToken);
+
+    const confirmEmailToken = createHash('sha256')
+      .update(splitToken)
+      .digest('hex');
+
+    console.log(confirmEmailToken);
+
+    const user = await this.userRepository.findOne({
+      where: {
+        confirmEmailToken: confirmEmailToken,
+        isEmailConfirmed: false,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(`Invalid`);
+    }
+
+    user.confirmEmailToken = null;
+    user.isEmailConfirmed = true;
+
+    await this.userRepository.save(user);
+
+    return {
+      message: 'Email confirmed',
+    };
   }
 
   async signIn(signInDto: SignInDto) {
@@ -155,7 +229,6 @@ export class AuthenticationService {
         message: 'Email sent!',
       };
     } catch (err) {
-      console.log(resetUrl);
       user.resetPasswordToken = null;
       user.resetPasswordExpire = null;
       await this.userRepository.save(user);
@@ -188,6 +261,17 @@ export class AuthenticationService {
     return {
       message: 'Password resetted!',
     };
+  }
+
+  async generateEmailConfirmToken(user: User) {
+    const confirmationToken = randomBytes(20).toString('hex');
+
+    user.confirmEmailToken = createHash('sha256')
+      .update(confirmationToken)
+      .digest('hex');
+
+    const confirmTokenExtend = randomBytes(100).toString('hex');
+    return `${confirmationToken}.${confirmTokenExtend}`;
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {

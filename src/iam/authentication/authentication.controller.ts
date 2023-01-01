@@ -10,6 +10,7 @@ import {
   Post,
   Res,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -23,6 +24,7 @@ import { ActiveUser } from '../decorators/active-user.decorator';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { ForgotPassDto } from './dto/forgot-pass.dto';
 import { ResetPassDto } from './dto/reset-pass.dto';
+import { ConfirmEmailQueryDto } from './dto/confirm-email-query.dto';
 
 @Controller('api/v1/auth')
 @ApiTags('authentication')
@@ -115,5 +117,11 @@ export class AuthenticationController {
     @Param('resetToken') resetToken: string,
   ) {
     return this.authService.resetPass(resetPassDto, resetToken);
+  }
+
+  @Auth(AuthType.None)
+  @Get('confirmemail')
+  async confirmEmail(@Query() confirmEmailQueryDto: ConfirmEmailQueryDto) {
+    return this.authService.confirmEmail(confirmEmailQueryDto);
   }
 }

@@ -4,7 +4,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsBoolean, IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
 
 export enum RoleType {
@@ -56,6 +56,14 @@ export class User {
     nullable: true,
   })
   resetPasswordExpire: Date;
+
+  @Exclude()
+  @Column({ name: 'confirm_email_token', unique: true, nullable: true })
+  confirmEmailToken: string;
+
+  @Column({ name: 'is_email_confirmed', default: false })
+  @IsBoolean()
+  isEmailConfirmed: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
