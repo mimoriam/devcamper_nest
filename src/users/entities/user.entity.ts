@@ -28,7 +28,7 @@ export class User {
   name: string;
 
   @Column({ unique: true })
-  @IsEmail({ message: 'Please add a valid email' })
+  @IsEmail()
   @IsString()
   email: string;
 
