@@ -3,10 +3,11 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
+  Scope,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { HashingService } from '../hashing/hashing.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -14,14 +15,19 @@ import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
-import { randomUUID } from 'crypto';
+import { randomUUID, randomBytes, createHash } from 'crypto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import {
   InvalidateRefreshTokenError,
   RefreshTokenIdsStorage,
 } from './refresh-token-ids.storage';
+import { ForgotPassDto } from './dto/forgot-pass.dto';
+import { createTransport } from 'nodemailer';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { ResetPassDto } from './dto/reset-pass.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthenticationService {
   constructor(
     @InjectRepository(User)
@@ -31,6 +37,7 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguation: ConfigType<typeof jwtConfig>,
     private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
+    @Inject(REQUEST) private readonly req: Request,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -104,6 +111,83 @@ export class AuthenticationService {
     }
 
     return user_in_db;
+  }
+
+  async forgotPass(forgotPassDto: ForgotPassDto) {
+    const user = await this.userRepository.findOneBy({
+      email: forgotPassDto.email,
+    });
+
+    const resetToken = randomBytes(20).toString('hex');
+    user.resetPasswordToken = createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    // This one is for the un-hashed token version:
+    // const resetToken = Math.random().toString(20).substring(2, 12);
+    // user.resetPasswordToken = resetToken;
+
+    user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
+
+    await this.userRepository.save(user);
+
+    const transporter = createTransport({
+      host: '0.0.0.0',
+      port: 1025,
+    });
+
+    const resetUrl = `${this.req.protocol}://${this.req.get(
+      'host',
+    )}/api/v1/auth/resetpassword/${resetToken}`;
+
+    const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+
+    try {
+      await transporter.sendMail({
+        from: 'from@example.com',
+        to: forgotPassDto.email,
+        subject: 'Password reset token',
+        text: message,
+        html: `Click <a href="${resetUrl}">here</a> to reset your password!`,
+      });
+
+      return {
+        message: 'Email sent!',
+      };
+    } catch (err) {
+      console.log(resetUrl);
+      user.resetPasswordToken = null;
+      user.resetPasswordExpire = null;
+      await this.userRepository.save(user);
+      throw new UnauthorizedException(`Email could not be sent`);
+    }
+  }
+
+  async resetPass(resetPassDto: ResetPassDto, resetToken: string) {
+    const resetPasswordToken = createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    const user = await this.userRepository.findOne({
+      where: {
+        // resetPasswordToken: resetToken,
+        resetPasswordToken: resetPasswordToken,
+        resetPasswordExpire: MoreThan(new Date(Date.now())),
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid Token');
+    }
+
+    user.password = await this.hashingService.hash(resetPassDto.password);
+    user.resetPasswordToken = null;
+    user.resetPasswordExpire = null;
+    await this.userRepository.save(user);
+
+    return {
+      message: 'Password resetted!',
+    };
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {

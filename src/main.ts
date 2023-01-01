@@ -42,6 +42,10 @@
 // npm i --save ioredis
 // nest g class iam/authentication/refresh-token-ids.storage
 
+// Forgot/Reset Password:
+// npm i nodemailer
+// npm i -D @types/nodemailer
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';

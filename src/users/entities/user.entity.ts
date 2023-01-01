@@ -45,11 +45,15 @@ export class User {
   @Length(5)
   password: string;
 
-  @Column({ name: 'reset_password_token', default: '' })
+  @Column({ name: 'reset_password_token', unique: true, nullable: true })
   resetPasswordToken: string;
 
-  @Column({ name: 'reset_password_expire', default: '' })
-  resetPasswordExpire: string;
+  @Column({
+    type: 'timestamp',
+    name: 'reset_password_expire',
+    nullable: true,
+  })
+  resetPasswordExpire: Date;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

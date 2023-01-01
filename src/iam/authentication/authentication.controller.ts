@@ -5,6 +5,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Res,
   UseInterceptors,
@@ -19,6 +21,8 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Response } from 'express';
 import { ActiveUser } from '../decorators/active-user.decorator';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { ForgotPassDto } from './dto/forgot-pass.dto';
+import { ResetPassDto } from './dto/reset-pass.dto';
 
 @Controller('api/v1/auth')
 @ApiTags('authentication')
@@ -96,5 +100,20 @@ export class AuthenticationController {
   @Get('me')
   async getMe(@ActiveUser() user: ActiveUserData) {
     return this.authService.getMe(user);
+  }
+
+  @Auth(AuthType.None)
+  @Post('forgotpassword')
+  async forgotPass(@Body() forgotPassDto: ForgotPassDto) {
+    return this.authService.forgotPass(forgotPassDto);
+  }
+
+  @Auth(AuthType.None)
+  @Patch('resetpassword/:resetToken')
+  async resetPass(
+    @Body() resetPassDto: ResetPassDto,
+    @Param('resetToken') resetToken: string,
+  ) {
+    return this.authService.resetPass(resetPassDto, resetToken);
   }
 }
