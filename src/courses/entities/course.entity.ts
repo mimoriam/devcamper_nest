@@ -54,16 +54,14 @@ export class Course {
   createdAt: Date;
 
   @ManyToOne(() => Bootcamp, (bootcamp) => bootcamp.courses, {
-    nullable: true,
+    // nullable: true,
     onDelete: 'CASCADE',
-    eager: true,
   })
   bootcamp: Bootcamp;
 
   @ManyToOne(() => User, (user) => user.courses, {
     // nullable: true,
     onDelete: 'CASCADE',
-    eager: true,
   })
   user: User;
 }

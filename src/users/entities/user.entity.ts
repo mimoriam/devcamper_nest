@@ -75,10 +75,16 @@ export class User {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @OneToMany(() => Bootcamp, (bootcamp) => bootcamp.user, { cascade: true })
+  @OneToMany(() => Bootcamp, (bootcamp) => bootcamp.user, {
+    cascade: true,
+    eager: true,
+  })
   bootcamps: Bootcamp[];
 
-  @OneToMany(() => Course, (course) => course.user, { cascade: true })
+  @OneToMany(() => Course, (course) => course.user, {
+    cascade: true,
+    eager: true,
+  })
   courses: Course[];
 
   /***

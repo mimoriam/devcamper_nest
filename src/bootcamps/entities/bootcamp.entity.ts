@@ -153,13 +153,13 @@ export class Bootcamp {
 
   @OneToMany(() => Course, (course) => course.bootcamp, {
     cascade: true,
+    eager: true,
   })
   courses: Course[];
 
   @ManyToOne(() => User, (user) => user.bootcamps, {
     // nullable: true,
     onDelete: 'CASCADE',
-    eager: true,
   })
   user: User;
 
