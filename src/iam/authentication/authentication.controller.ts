@@ -8,9 +8,9 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UseInterceptors,
-  Query,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -25,6 +25,7 @@ import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { ForgotPassDto } from './dto/forgot-pass.dto';
 import { ResetPassDto } from './dto/reset-pass.dto';
 import { ConfirmEmailQueryDto } from './dto/confirm-email-query.dto';
+import { UpdatePassDto } from './dto/update-pass.dto';
 
 @Controller('api/v1/auth')
 @ApiTags('authentication')
@@ -117,6 +118,15 @@ export class AuthenticationController {
     @Param('resetToken') resetToken: string,
   ) {
     return this.authService.resetPass(resetPassDto, resetToken);
+  }
+
+  @Auth(AuthType.Bearer)
+  @Patch('updatepassword')
+  async updatePass(
+    @Body() updatePassDto: UpdatePassDto,
+    @ActiveUser() user: ActiveUserData,
+  ) {
+    return this.authService.updatePass(updatePassDto, user);
   }
 
   @Auth(AuthType.None)

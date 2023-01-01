@@ -27,6 +27,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { ResetPassDto } from './dto/reset-pass.dto';
 import { ConfirmEmailQueryDto } from './dto/confirm-email-query.dto';
+import { UpdatePassDto } from './dto/update-pass.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthenticationService {
@@ -260,6 +261,34 @@ export class AuthenticationService {
 
     return {
       message: 'Password resetted!',
+    };
+  }
+
+  async updatePass(updatePassDto: UpdatePassDto, user: ActiveUserData) {
+    const user_in_db = await this.userRepository.findOneBy({
+      email: user.email,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(`User does not exist`);
+    }
+
+    const isEqual = await this.hashingService.compare(
+      updatePassDto.currentPassword,
+      user_in_db.password,
+    );
+
+    if (!isEqual) {
+      throw new UnauthorizedException(`Password does not match`);
+    }
+
+    user_in_db.password = await this.hashingService.hash(
+      updatePassDto.newPassword,
+    );
+    await this.userRepository.save(user_in_db);
+
+    return {
+      message: 'Password updated!',
     };
   }
 
