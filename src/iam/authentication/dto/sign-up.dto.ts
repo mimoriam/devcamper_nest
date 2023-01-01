@@ -1,16 +1,21 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
 import { RoleType } from '../../../users/entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class SignUpDto {
+  @ApiProperty()
   @IsString()
-  name: string;
+  readonly name: string;
 
+  @ApiProperty()
   @IsEmail()
-  email: string;
+  readonly email: string;
 
+  @ApiProperty()
   @IsString()
-  role: RoleType;
+  readonly role: RoleType;
 
+  @ApiProperty()
   @MinLength(5)
-  password: string;
+  readonly password: string;
 }

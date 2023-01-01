@@ -1,6 +1,8 @@
 import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ResetPassDto {
+  @ApiProperty()
   @IsString()
-  password: string;
+  readonly password: string;
 }

@@ -45,9 +45,11 @@ export class User {
   @Length(5)
   password: string;
 
+  @Exclude()
   @Column({ name: 'reset_password_token', unique: true, nullable: true })
   resetPasswordToken: string;
 
+  @Exclude()
   @Column({
     type: 'timestamp',
     name: 'reset_password_expire',
