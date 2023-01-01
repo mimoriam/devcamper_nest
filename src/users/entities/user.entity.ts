@@ -1,11 +1,16 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { IsBoolean, IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
+import { Bootcamp } from '../../bootcamps/entities/bootcamp.entity';
+import { Course } from '../../courses/entities/course.entity';
 
 export enum RoleType {
   USER = 'user',
@@ -62,6 +67,7 @@ export class User {
   @Column({ name: 'confirm_email_token', unique: true, nullable: true })
   confirmEmailToken: string;
 
+  @Exclude()
   @Column({ name: 'is_email_confirmed', default: false })
   @IsBoolean()
   isEmailConfirmed: boolean;
@@ -69,7 +75,20 @@ export class User {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
+  @OneToMany(() => Bootcamp, (bootcamp) => bootcamp.user, { cascade: true })
+  bootcamps: Bootcamp[];
+
+  @OneToMany(() => Course, (course) => course.user, { cascade: true })
+  courses: Course[];
+
   /***
    * END
    * ***/
+
+  @BeforeInsert()
+  async forbidUserRoleChangeToAdmin() {
+    if (this.role === RoleType.ADMIN) {
+      this.role = RoleType.USER;
+    }
+  }
 }

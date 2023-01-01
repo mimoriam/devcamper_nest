@@ -2,6 +2,7 @@ import { IsBoolean, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Bootcamp } from '../../bootcamps/entities/bootcamp.entity';
 import { minimumSkillType } from '../entities/course.entity';
+import { User } from '../../users/entities/user.entity';
 
 export class CreateCourseDto {
   @ApiProperty()
@@ -38,5 +39,5 @@ export class CreateCourseDto {
 
   @ApiProperty()
   @IsString()
-  readonly user: string;
+  readonly user: User;
 }

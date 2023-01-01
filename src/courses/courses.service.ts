@@ -30,7 +30,7 @@ export class CoursesService {
       searchableColumns: [],
       defaultLimit: 2,
       maxLimit: 2,
-      relations: ['bootcamp'],
+      relations: ['bootcamp', 'user'],
     });
   }
 

@@ -1,5 +1,6 @@
 import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../../users/entities/user.entity';
 
 export class CreateBootcampDto {
   @ApiProperty()
@@ -8,7 +9,7 @@ export class CreateBootcampDto {
 
   @ApiProperty()
   @IsString()
-  readonly user: string;
+  readonly user: User;
 
   @ApiProperty()
   @IsString()

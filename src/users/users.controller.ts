@@ -1,11 +1,13 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,6 +16,7 @@ import { Roles } from '../iam/authorization/decorators/roles.decorator';
 import { RoleType } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Roles(RoleType.ADMIN)
 @ApiTags('users')
 @Controller('api/v1/users')

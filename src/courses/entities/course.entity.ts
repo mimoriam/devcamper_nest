@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Bootcamp } from '../../bootcamps/entities/bootcamp.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum minimumSkillType {
   BEGINNER = 'beginner',
@@ -58,6 +59,13 @@ export class Course {
     eager: true,
   })
   bootcamp: Bootcamp;
+
+  @ManyToOne(() => User, (user) => user.courses, {
+    // nullable: true,
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  user: User;
 }
 
 import {

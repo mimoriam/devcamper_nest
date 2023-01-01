@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 // import { CreateCourseDto } from './dto/create-course.dto';
@@ -16,6 +18,7 @@ import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Auth } from '../iam/authentication/decorators/auth.decrator';
 import { AuthType } from '../iam/authentication/enums/auth-type.enum';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('api/v1/courses')
 @ApiTags('courses')
 export class CoursesController {

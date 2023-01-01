@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  UploadedFile,
+  UploadedFile, ClassSerializerInterceptor
 } from '@nestjs/common';
 import { BootcampsService } from './bootcamps.service';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
@@ -30,6 +30,7 @@ import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
 // Note: To get the req.user in service, use Scopes:
 // https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('api/v1/bootcamps')
 @ApiTags('bootcamps')
 export class BootcampsController {
