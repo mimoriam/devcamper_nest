@@ -67,7 +67,7 @@ export class CoursesService {
   async createCourseFromBootcamp(
     bootcampId: string,
     createCourseDto: CreateCourseDto,
-    user: ActiveUserData
+    user: ActiveUserData,
   ): Promise<Course> {
     const bootcamp = await this.bootcampRepo.findOneBy({
       id: bootcampId,
