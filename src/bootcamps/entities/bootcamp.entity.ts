@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   BeforeInsert,
   BeforeUpdate,
   Column,
@@ -30,7 +31,7 @@ import { User } from '../../users/entities/user.entity';
 @Entity({ name: 'bootcamps' })
 @Index(['name', 'email'], { unique: true, fulltext: true })
 @Index(['location'], { spatial: true })
-export class Bootcamp {
+export class Bootcamp extends BaseEntity {
   @PrimaryColumn()
   id: string;
 

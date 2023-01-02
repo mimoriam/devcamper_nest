@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -18,7 +19,7 @@ export enum minimumSkillType {
 
 @Entity({ name: 'courses' })
 @Index(['title'], { unique: true, fulltext: true })
-export class Course {
+export class Course extends BaseEntity {
   @PrimaryColumn()
   id: string;
 

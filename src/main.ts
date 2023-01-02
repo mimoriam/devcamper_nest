@@ -46,6 +46,16 @@
 // npm i nodemailer
 // npm i -D @types/nodemailer
 
+// Admin panel:
+// npm i adminjs @adminjs/nestjs @adminjs/typeorm
+// npm i @adminjs/express express-session express-formidable
+// npm i @adminjs/import-export
+
+// Authorization/CASL:
+// npm i @casl/ability
+// nest g module casl
+// nest g class casl/casl-ability.factory
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
