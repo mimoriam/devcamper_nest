@@ -83,7 +83,7 @@ export class User {
 
   @OneToMany(() => Course, (course) => course.user, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   courses: Course[];
 

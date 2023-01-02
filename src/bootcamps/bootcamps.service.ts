@@ -22,7 +22,7 @@ export class BootcampsService {
 
   async findAll(query: PaginateQuery): Promise<Paginated<Bootcamp>> {
     return paginate(query, this.bootcampRepo, {
-      relations: ['courses', 'user'],
+      relations: ['courses'],
       sortableColumns: ['id', 'name'],
       nullSort: 'last',
       searchableColumns: ['name'],

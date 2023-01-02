@@ -24,13 +24,27 @@ export class CoursesService {
   // }
 
   async findAll(query: PaginateQuery): Promise<Paginated<Course>> {
-    return paginate(query, this.courseRepo, {
+    // return paginate(query, this.courseRepo, {
+    //   sortableColumns: ['id'],
+    //   nullSort: 'last',
+    //   searchableColumns: [],
+    //   defaultLimit: 2,
+    //   maxLimit: 2,
+    //   relations: ['bootcamp', 'user'],
+    //   select: [],
+    // });
+
+    const qb = this.courseRepo
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.bootcamp', 'bootcamp')
+      .select(['course', 'bootcamp.id', 'bootcamp.name']);
+
+    return await paginate(query, qb, {
       sortableColumns: ['id'],
       nullSort: 'last',
       searchableColumns: [],
       defaultLimit: 2,
       maxLimit: 2,
-      relations: ['bootcamp', 'user'],
     });
   }
 
@@ -39,15 +53,21 @@ export class CoursesService {
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.bootcamp', 'bootcamp')
       .where('course.bootcamp LIKE :bootcampId', { bootcampId })
-      .select()
+      .select(['course', 'bootcamp.id', 'bootcamp.name'])
       .getMany();
   }
 
   async findOne(id: string): Promise<Course> {
-    const course = await this.courseRepo.findOne({
-      where: { id: id },
-      // relations: ['bootcamp'],
-    });
+    // const course = await this.courseRepo.findOne({
+    //   where: { id: id },
+    // });
+
+    const course = await this.courseRepo
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.bootcamp', 'bootcamp')
+      .where('course.id LIKE :courseId', { courseId: id })
+      .select(['course', 'bootcamp.id', 'bootcamp.name'])
+      .getOne();
 
     if (!course) {
       throw new NotFoundException(`Course not found with id of ${id}`);
