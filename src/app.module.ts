@@ -29,6 +29,8 @@ import { IamModule } from './iam/iam.module';
         cache: {
           duration: 3000, // 3 seconds
         },
+        // This is to make sure TypeORM uses Postgres server's timezone:
+        timezone: 'Z',
       }),
     }),
 
