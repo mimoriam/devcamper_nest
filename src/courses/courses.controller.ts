@@ -15,7 +15,7 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Course } from './entities/course.entity';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
-import { Auth } from '../iam/authentication/decorators/auth.decrator';
+import { Auth } from '../iam/authentication/decorators/auth.decorator';
 import { AuthType } from '../iam/authentication/enums/auth-type.enum';
 
 @UseInterceptors(ClassSerializerInterceptor)

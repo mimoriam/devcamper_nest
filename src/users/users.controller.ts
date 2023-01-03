@@ -14,7 +14,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Auth } from '../iam/authentication/decorators/auth.decrator';
+import { Auth } from '../iam/authentication/decorators/auth.decorator';
 import { AuthType } from '../iam/authentication/enums/auth-type.enum';
 import { AbilitiesGuard } from '../casl/guards/abilities.guard';
 import { CheckAbilities } from '../casl/decorators/abilities.decorator';

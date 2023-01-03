@@ -7,7 +7,8 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  UploadedFile, ClassSerializerInterceptor
+  UploadedFile,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { BootcampsService } from './bootcamps.service';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
@@ -21,7 +22,7 @@ import { CoursesService } from '../courses/courses.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Request } from 'express';
-import { Auth } from '../iam/authentication/decorators/auth.decrator';
+import { Auth } from '../iam/authentication/decorators/auth.decorator';
 import { AuthType } from '../iam/authentication/enums/auth-type.enum';
 import { ActiveUser } from '../iam/decorators/active-user.decorator';
 import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
