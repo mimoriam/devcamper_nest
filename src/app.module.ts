@@ -14,6 +14,7 @@ import importExportFeature from '@adminjs/import-export';
 import { Bootcamp } from './bootcamps/entities/bootcamp.entity';
 import { Course } from './courses/entities/course.entity';
 import { User } from './users/entities/user.entity';
+import { CaslModule } from './casl/casl.module';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -102,6 +103,8 @@ const authenticate = async (email: string, password: string) => {
         // },
       }),
     }),
+
+    CaslModule,
   ],
   controllers: [],
   providers: [],
