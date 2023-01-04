@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +13,7 @@ import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
+import { RoleType } from '../users/entities/user.entity';
 
 @Injectable()
 export class CoursesService {
@@ -89,12 +94,25 @@ export class CoursesService {
     createCourseDto: CreateCourseDto,
     user: ActiveUserData,
   ): Promise<Course> {
-    const bootcamp = await this.bootcampRepo.findOneBy({
-      id: bootcampId,
+    const bootcamp = await this.bootcampRepo.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        id: bootcampId,
+      },
     });
 
     if (!bootcamp) {
       throw new NotFoundException(`Bootcamp #${bootcampId} not found`);
+    }
+
+    // Make sure user is bootcamp owner:
+    if (
+      bootcamp.user.id !== user.sub.toString() &&
+      user.role !== RoleType.ADMIN
+    ) {
+      throw new UnauthorizedException();
     }
 
     const course = this.courseRepo.create({
@@ -104,7 +122,11 @@ export class CoursesService {
     return this.courseRepo.save(course);
   }
 
-  async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
+  async update(
+    id: string,
+    updateCourseDto: UpdateCourseDto,
+    user: ActiveUserData,
+  ): Promise<Course> {
     const course = await this.courseRepo.preload({
       id: id,
       ...updateCourseDto,
@@ -114,10 +136,28 @@ export class CoursesService {
       throw new NotFoundException(`Course #${id} not found`);
     }
 
+    const courseFound = await this.courseRepo.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    // Make sure user is "COURSE" owner:
+    // The same is for remove method below, copy & paste:
+    if (
+      courseFound.user.id !== user.sub.toString() &&
+      user.role !== RoleType.ADMIN
+    ) {
+      throw new UnauthorizedException();
+    }
+
     return this.courseRepo.save(course);
   }
 
-  async remove(id: string): Promise<Course> {
+  async remove(id: string, user: ActiveUserData): Promise<Course> {
     const course = await this.courseRepo.findOneBy({
       id: id,
     });

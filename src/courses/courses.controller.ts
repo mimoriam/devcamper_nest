@@ -17,6 +17,8 @@ import { Course } from './entities/course.entity';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Auth } from '../iam/authentication/decorators/auth.decorator';
 import { AuthType } from '../iam/authentication/enums/auth-type.enum';
+import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
+import { ActiveUser } from '../iam/decorators/active-user.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('api/v1/courses')
@@ -58,16 +60,22 @@ export class CoursesController {
   //   return this.coursesService.create(createCourseDto);
   // }
 
+  @Auth(AuthType.Bearer)
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<Course> {
-    return this.coursesService.update(id, updateCourseDto);
+    return this.coursesService.update(id, updateCourseDto, user);
   }
 
+  @Auth(AuthType.Bearer)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<Course> {
-    return this.coursesService.remove(id);
+  async remove(
+    @Param('id') id: string,
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<Course> {
+    return this.coursesService.remove(id, user);
   }
 }
