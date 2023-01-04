@@ -1,4 +1,8 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateBootcampDto } from './dto/create-bootcamp.dto';
 import { UpdateBootcampDto } from './dto/update-bootcamp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +12,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
+import { RoleType } from '../users/entities/user.entity';
 
 @Injectable()
 export class BootcampsService {
@@ -93,6 +98,18 @@ export class BootcampsService {
     createBootcampDto: CreateBootcampDto,
     user: ActiveUserData,
   ): Promise<Bootcamp> {
+    const bootcampFound = await this.bootcampRepo
+      .createQueryBuilder('bootcamp')
+      .leftJoinAndSelect('bootcamp.user', 'user')
+      .where('bootcamp.user = :userId', { userId: user.sub })
+      .select()
+      .getOne();
+
+    // If the user is not an admin, they can only add one bootcamp:
+    if (bootcampFound && user.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
     const bootcamp = this.bootcampRepo.create({
       ...createBootcampDto,
     });
@@ -114,6 +131,23 @@ export class BootcampsService {
       throw new NotFoundException(`Bootcamp #${id} not found`);
     }
 
+    const bootcampFound = await this.bootcampRepo.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    // Make sure user is bootcamp owner
+    if (
+      bootcampFound.user.id.toString() !== user.sub.toString() &&
+      user.role !== RoleType.ADMIN
+    ) {
+      throw new UnauthorizedException();
+    }
+
     return this.bootcampRepo.save(bootcamp);
   }
 
@@ -121,6 +155,24 @@ export class BootcampsService {
     const bootcamp = await this.bootcampRepo.findOneBy({
       id: id,
     });
+
+    // This one is stupid and has two FIND calls to the DB. TODO: Refactor:
+    const bootcampFound = await this.bootcampRepo.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    // Make sure user is bootcamp owner
+    if (
+      bootcampFound.user.id.toString() !== user.sub.toString() &&
+      user.role !== RoleType.ADMIN
+    ) {
+      throw new UnauthorizedException();
+    }
 
     return this.bootcampRepo.remove(bootcamp);
   }
