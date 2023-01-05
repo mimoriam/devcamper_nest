@@ -15,6 +15,8 @@ import { Bootcamp } from './bootcamps/entities/bootcamp.entity';
 import { Course } from './courses/entities/course.entity';
 import { User } from './users/entities/user.entity';
 import { CaslModule } from './casl/casl.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -35,6 +37,10 @@ const authenticate = async (email: string, password: string) => {
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 10 * 60 * 1000, // 10 mins
+      limit: 100,
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
@@ -107,6 +113,11 @@ const authenticate = async (email: string, password: string) => {
     CaslModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

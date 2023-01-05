@@ -56,14 +56,28 @@
 // nest g module casl
 // nest g class casl/casl-ability.factory
 
+// npm i --save helmet
+// npm i --save @nestjs/throttler
+
+// WARNING: This package is deprecated so won't use:
+// npm i --save csurf
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: ['http://localhost:8000'],
+      credentials: true,
+    },
+  });
+
+  app.use(helmet());
 
   app.enableVersioning({
     type: VersioningType.URI,
