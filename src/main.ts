@@ -66,6 +66,11 @@
 // nest g s iam/authentication/social/google-authentication --flat
 // nest g co iam/authentication/social/google-authentication --flat
 
+// # Two-factor authentication:
+// npm i otplib qrcode
+// npm i -D @types/qrcode
+// nest g service iam/authentication/otp-authentication --flat
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';

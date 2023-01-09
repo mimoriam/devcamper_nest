@@ -28,6 +28,7 @@ import { Request } from 'express';
 import { ResetPassDto } from './dto/reset-pass.dto';
 import { ConfirmEmailQueryDto } from './dto/confirm-email-query.dto';
 import { UpdatePassDto } from './dto/update-pass.dto';
+import { OtpAuthenticationService } from './otp-authentication.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthenticationService {
@@ -39,7 +40,9 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguation: ConfigType<typeof jwtConfig>,
     private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
-    @Inject(REQUEST) private readonly req: Request,
+    @Inject(REQUEST)
+    private readonly req: Request,
+    private readonly otpAuthService: OtpAuthenticationService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -150,6 +153,17 @@ export class AuthenticationService {
 
     if (!isEqual) {
       throw new UnauthorizedException(`Password does not match`);
+    }
+
+    if (user.isTfaEnabled) {
+      const isValid = this.otpAuthService.verifyCode(
+        signInDto.tfaCode,
+        user.tfaSecret,
+      );
+
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid 2FA code');
+      }
     }
 
     return await this.generateTokens(user);
