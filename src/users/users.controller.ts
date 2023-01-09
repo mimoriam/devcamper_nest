@@ -25,6 +25,8 @@ import { Action } from '../casl/casl-ability.factory';
 import { User } from './entities/user.entity';
 import { GET_USERS_CACHE_KEY } from './usersCacheKey.constant';
 
+export const USERS_CACHE_KEY = 'GET_USERS_CACHE';
+
 @UseInterceptors(ClassSerializerInterceptor)
 // @Roles(RoleType.ADMIN)
 @ApiTags('users')
@@ -44,6 +46,9 @@ export class UsersController {
   @Auth(AuthType.Bearer)
   @UseGuards(AbilitiesGuard)
   @CheckAbilities({ action: Action.Read, subject: User })
+  @UseInterceptors(CacheInterceptor) // Automatically cache the response for this endpoint
+  @CacheKey(USERS_CACHE_KEY)
+  @CacheTTL(30)
   findAll() {
     return this.usersService.findAll();
   }

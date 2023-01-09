@@ -1,6 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+
 import { Cache } from 'cache-manager';
 import { GET_USERS_CACHE_KEY } from './usersCacheKey.constant';
 
@@ -13,6 +14,8 @@ export class UsersService {
     keys.forEach((key) => {
       if (key.startsWith(GET_USERS_CACHE_KEY)) {
         this.cacheManager.del(key);
+
+
       }
     });
   }
