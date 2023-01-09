@@ -89,10 +89,13 @@
 // npx typeorm-ts-node-esm migration:run -d ./ormconfig.ts
 // npx typeorm-ts-node-esm migration:revert -d ./ormconfig.ts
 
-// Individual route cache:
+
+// Caching section:
 // npm i cache-manager
-// npm i -D @types/cache-manager
+
 // npm i cache-manager-redis-store
+// npm i -D @types/cache-manager-redis-store
+
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

@@ -1,26 +1,21 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { USERS_CACHE_KEY } from './users.controller';
-import { Cache } from 'cache-manager';
 
-// retrieve the values using: cacheManager.get('key') method,
-// add items using: cacheManager.set('key', 'value),
-// remove elements using: cacheManager.del('key'),
-// clear the cache using: cacheManager.reset().
+import { Cache } from 'cache-manager';
+import { GET_USERS_CACHE_KEY } from './usersCacheKey.constant';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(CACHE_MANAGER)
-    private cacheManager: Cache,
-  ) {}
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async clearCache() {
     const keys: string[] = await this.cacheManager.store.keys();
     keys.forEach((key) => {
-      if (key.startsWith(USERS_CACHE_KEY)) {
-        this.cacheManager.del('key');
+      if (key.startsWith(GET_USERS_CACHE_KEY)) {
+        this.cacheManager.del(key);
+
+
       }
     });
   }

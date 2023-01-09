@@ -8,7 +8,8 @@ dotenv.config({ path: path.join(__dirname, '../../../.env') });
 const options: NodeGeocoder.Options = {
   provider: 'mapquest',
   httpAdapter: 'https',
-  apiKey: process.env.GEOCODER_API_KEY,
+  // apiKey: process.env.GEOCODER_API_KEY,
+  apiKey: 'n4vFiSG2d0lFH8qSOaGV1ukqMaWzYwQP',
   formatter: null,
   timeout: 4000,
 };
