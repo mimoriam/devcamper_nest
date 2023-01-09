@@ -65,6 +65,7 @@
     "typeorm": "^0.3.11"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.19",
     "@nestjs/cli": "^9.1.8",
     "@nestjs/schematics": "^9.0.4",
     "@nestjs/testing": "^9.2.1",

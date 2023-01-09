@@ -101,6 +101,10 @@
 // nest g module health
 // nest g controller health
 
+// Documentation generation + High-level architectural diagram:
+// npm i -D @compodoc/compodoc
+// npx @compodoc/compodoc -p tsconfig.json -s
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
