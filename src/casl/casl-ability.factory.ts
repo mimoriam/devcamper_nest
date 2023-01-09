@@ -44,7 +44,7 @@ export class CaslAbilityFactory {
       // type FlatBootcamp = Bootcamp & {
       //   'user.id': Bootcamp['user']['id'];
       // };
-      // cannot<FlatBootcamp>(Action.Create, Bootcamp, { 'user.id': user.id });
+      // cannot(Action.Create, Bootcamp, { user: { id: user.id } });
     }
 
     // https://www.youtube.com/watch?v=1pPjCX0FHco
