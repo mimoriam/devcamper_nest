@@ -101,6 +101,11 @@ import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
+// Run in Cluster configs:
+// import { ConfigService } from '@nestjs/config';
+// import { config } from 'aws-sdk';
+// import { runInCluster } from './runInClusters';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
@@ -143,3 +148,55 @@ async function bootstrap() {
 }
 
 bootstrap().then();
+
+// Run NestJS in clusters manually without PM2:
+// async function bootstrap() {
+//   const app = await NestFactory.create(AppModule, {
+//     cors: {
+//       origin: ['http://localhost:8000', 'http://localhost:3000'],
+//       credentials: true,
+//     },
+//   });
+//
+//   app.use(helmet());
+//
+//   app.enableVersioning({
+//     type: VersioningType.URI,
+//   });
+//
+//   app.useGlobalPipes(
+//     new ValidationPipe({
+//       enableDebugMessages: true,
+//       whitelist: true,
+//       transform: true,
+//       // forbidNonWhitelisted: true,
+//       transformOptions: {
+//         enableImplicitConversion: true,
+//       },
+//     }),
+//   );
+//
+//   app.use(cookieParser());
+//
+//   const options = new DocumentBuilder()
+//     .setTitle('DevCamper')
+//     .setDescription('DevCamper Application')
+//     .setVersion('1.0')
+//     .addTag('bootcamps')
+//     .build();
+//
+//   const document = SwaggerModule.createDocument(app, options);
+//   SwaggerModule.setup('api', app, document);
+//
+//   // Changes here:
+//   const configService = app.get(ConfigService);
+//   config.update({
+//     accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
+//     secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+//     region: configService.get('AWS_REGION'),
+//   });
+//
+//   await app.listen(3000);
+// }
+//
+// runInCluster(bootstrap);
