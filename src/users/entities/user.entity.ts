@@ -24,6 +24,7 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
 
+  // Change entity name for migration checking:
   @Column({ unique: true })
   @IsString()
   name: string;

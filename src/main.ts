@@ -79,6 +79,16 @@
 // nest g class iam/authentication/serializers/user-serializer
 // nest g guard iam/authentication/guards/session
 
+// Migrations:
+// npm run build
+// npx typeorm migration:create src/migrations/CoffeeRefactor
+
+// ^ if above doesn't work, use:
+// npx typeorm-ts-node-esm migration:generate src/migrations/UserColMigration -d ./ormconfig.ts
+
+// npx typeorm-ts-node-esm migration:run -d ./ormconfig.ts
+// npx typeorm-ts-node-esm migration:revert -d ./ormconfig.ts
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
