@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { CacheModule, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BootcampsModule } from './bootcamps/bootcamps.module';
 import { CoursesModule } from './courses/courses.module';
@@ -17,6 +17,7 @@ import { User } from './users/entities/user.entity';
 import { CaslModule } from './casl/casl.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import * as redisStore from 'cache-manager-redis-store';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -41,9 +42,24 @@ const authenticate = async (email: string, password: string) => {
       ttl: 10 * 60 * 1000, // 10 mins
       limit: 100,
     }),
+
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
+    }),
+
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        isGlobal: true,
+        store: redisStore,
+        // host: configService.get('REDIS_HOST'),
+        // port: configService.get('REDIS_PORT'),
+        host: 'localhost',
+        port: 6379,
+        ttl: 120,
+      }),
     }),
 
     TypeOrmModule.forRootAsync({

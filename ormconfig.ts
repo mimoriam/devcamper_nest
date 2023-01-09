@@ -2,9 +2,9 @@ import { DataSource } from 'typeorm';
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { Bootcamp } from "./src/bootcamps/entities/bootcamp.entity";
-import { Course } from "./src/courses/entities/course.entity";
-import { User } from "./src/users/entities/user.entity";
+import { Bootcamp } from './src/bootcamps/entities/bootcamp.entity';
+import { Course } from './src/courses/entities/course.entity';
+import { User } from './src/users/entities/user.entity';
 
 // console.log(path.join(__dirname, '/.env'));
 
