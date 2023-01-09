@@ -17,6 +17,7 @@ import { User } from './users/entities/user.entity';
 import { CaslModule } from './casl/casl.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { HealthModule } from './health/health.module';
 
 import * as redisStore from 'cache-manager-redis-store';
 
@@ -128,6 +129,8 @@ const authenticate = async (email: string, password: string) => {
     }),
 
     CaslModule,
+
+    HealthModule,
   ],
   controllers: [],
   providers: [

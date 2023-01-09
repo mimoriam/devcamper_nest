@@ -95,6 +95,12 @@
 // npm i cache-manager-redis-store
 // npm i -D @types/cache-manager-redis-store
 
+// Health check endpoint:
+// npm install --save @nestjs/terminus
+
+// nest g module health
+// nest g controller health
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
