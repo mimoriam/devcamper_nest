@@ -33,6 +33,9 @@ export class User extends BaseEntity {
   @IsString()
   email: string;
 
+  @Column({ nullable: true })
+  googleId: string;
+
   @Column({
     type: 'enum',
     enum: RoleType,
@@ -48,7 +51,7 @@ export class User extends BaseEntity {
   // https://docs.nestjs.com/techniques/serialization
   // @Column({ select: false })
   @Exclude()
-  @Column()
+  @Column({ nullable: true }) // For Google account
   @Length(5)
   password: string;
 

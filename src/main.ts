@@ -62,6 +62,10 @@
 // WARNING: This package is deprecated so won't use:
 // npm i --save csurf
 
+// npm i google-auth-library
+// nest g s iam/authentication/social/google-authentication --flat
+// nest g co iam/authentication/social/google-authentication --flat
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -72,7 +76,7 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: ['http://localhost:8000'],
+      origin: ['http://localhost:8000', 'http://localhost:3000'],
       credentials: true,
     },
   });
