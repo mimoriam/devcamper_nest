@@ -1,5 +1,8 @@
 import {
   Body,
+  CacheInterceptor,
+  CacheKey,
+  CacheTTL,
   ClassSerializerInterceptor,
   Controller,
   Delete,
@@ -20,6 +23,7 @@ import { AbilitiesGuard } from '../casl/guards/abilities.guard';
 import { CheckAbilities } from '../casl/decorators/abilities.decorator';
 import { Action } from '../casl/casl-ability.factory';
 import { User } from './entities/user.entity';
+import { GET_USERS_CACHE_KEY } from './usersCacheKey.constant';
 
 @UseInterceptors(ClassSerializerInterceptor)
 // @Roles(RoleType.ADMIN)
@@ -33,6 +37,9 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey(GET_USERS_CACHE_KEY)
+  @CacheTTL(120)
   @Get()
   @Auth(AuthType.Bearer)
   @UseGuards(AbilitiesGuard)
