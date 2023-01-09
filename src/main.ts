@@ -71,6 +71,14 @@
 // npm i -D @types/qrcode
 // nest g service iam/authentication/otp-authentication --flat
 
+// # Passport sessions using Redis:
+// npm i passport @nestjs/passport express-session connect-redis
+// npm i -D @types/passport @types/express-session @types/connect-redis
+// nest g s iam/authentication/session-authentication --flat
+// nest g co iam/authentication/session-authentication --flat
+// nest g class iam/authentication/serializers/user-serializer
+// nest g guard iam/authentication/guards/session
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
