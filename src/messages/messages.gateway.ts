@@ -4,24 +4,41 @@ import {
   MessageBody,
   WebSocketServer,
   ConnectedSocket,
+  OnGatewayInit,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Server, Socket } from 'socket.io';
-import { OnModuleInit } from '@nestjs/common';
+import {} from '@nestjs/common';
 
 // https://www.youtube.com/watch?v=atbdpX4CViM
 @WebSocketGateway()
-export class MessagesGateway implements OnModuleInit {
+export class MessagesGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
   constructor(private readonly messagesService: MessagesService) {}
 
-  onModuleInit(): any {
-    this.server.on('connection', (socket) => {
-      // console.log(socket.id);
-    });
+  afterInit(server: Server) {
+    console.log('Initialized');
+  }
+
+  // OnModuleInit(): any {
+  //   this.server.on('connection', (socket) => {
+  //     // console.log(socket.id);
+  //   });
+  // }
+
+  handleConnection(client: Socket, ...args: any[]): any {
+    console.log(`Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket): any {
+    console.log(`Client disconnected with ID: ${client.id}`);
   }
 
   @SubscribeMessage('createMessage')
