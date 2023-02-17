@@ -113,6 +113,8 @@
 // npm i - D @types/adm-zip @types/sharp
 // npm i @bull-board/express @bull-board/api
 
+// https://docs.nestjs.com/controllers#appendix-library-specific-approach
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
