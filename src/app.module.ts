@@ -20,6 +20,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { HealthModule } from './health/health.module';
 
 import * as redisStore from 'cache-manager-redis-store';
+import { BullModule } from '@nestjs/bull';
+import { OptimizeImgModule } from './optimize_img/optimize_img.module';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -54,13 +56,27 @@ const authenticate = async (email: string, password: string) => {
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const store = await redisStore.redisStore({
-          socket: { host: 'localhost', port: 6379 },
+          socket: {
+            host: configService.get('REDIS_HOST'),
+            port: Number(configService.get('REDIS_PORT')),
+          },
           ttl: 60,
         });
         return {
           store: () => store,
         };
       },
+      inject: [ConfigService],
+    }),
+
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: Number(configService.get('REDIS_PORT')),
+        },
+      }),
       inject: [ConfigService],
     }),
 
@@ -131,6 +147,8 @@ const authenticate = async (email: string, password: string) => {
     CaslModule,
 
     HealthModule,
+
+    OptimizeImgModule,
   ],
   controllers: [],
   providers: [

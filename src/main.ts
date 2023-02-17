@@ -105,6 +105,13 @@
 // npm i -D @compodoc/compodoc
 // npx @compodoc/compodoc -p tsconfig.json -s
 
+// npm i @nestjs/bull bull
+// npm i -D @types/bull
+
+// Optimize and zip images:
+// npm i adm-zip sharp
+// npm i - D @types/adm-zip @types/sharp
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
