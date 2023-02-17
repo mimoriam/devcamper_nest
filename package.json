@@ -26,6 +26,8 @@
     "@adminjs/import-export": "^2.0.2",
     "@adminjs/nestjs": "^5.1.0",
     "@adminjs/typeorm": "^4.0.0",
+    "@bull-board/api": "^4.12.1",
+    "@bull-board/express": "^4.12.1",
     "@casl/ability": "^6.3.3",
     "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^9.3.9",

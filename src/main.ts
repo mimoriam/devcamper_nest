@@ -111,6 +111,7 @@
 // Optimize and zip images:
 // npm i adm-zip sharp
 // npm i - D @types/adm-zip @types/sharp
+// npm i @bull-board/express @bull-board/api
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

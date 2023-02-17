@@ -3,6 +3,8 @@ import { BullModule } from '@nestjs/bull';
 import { OptimizeImgController } from './optimize_img.controller';
 // import { ImageProcessor } from './optimize_img.processor';
 import { join } from 'path';
+import { OptimizeImgBullBoardService } from './optimize_img_bullboard.service';
+import { OptimizeImgBullBoardController } from './optimize_img_bullboard.controller';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { join } from 'path';
   // Don't forget to add Processors/Consumers into providers:
   // No need to add Processors/Consumers into providers if defined above in processors via multiprocess scheduling:
   // providers: [ImageProcessor],
-  controllers: [OptimizeImgController],
+  controllers: [OptimizeImgController, OptimizeImgBullBoardController],
+  providers: [OptimizeImgBullBoardService],
 })
 export class OptimizeImgModule {}

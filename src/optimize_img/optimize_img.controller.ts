@@ -14,8 +14,11 @@ import { Queue } from 'bull';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { Readable } from 'stream';
+import { queuePool } from './optimize_img_bullboard.service';
 
 // https://wanago.io/2021/05/03/api-nestjs-cpu-intensive-tasks-queues/
+// This is also good:
+// https://www.learmoreseekmore.com/2021/04/guide-on-nestjs-queues.html
 
 @Controller('api/v1/optimize-img')
 export class OptimizeImgController {
@@ -31,6 +34,9 @@ export class OptimizeImgController {
     const job = await this.imageQueue.add('optimize', {
       files,
     });
+
+    // !!NECESSARY for showing in bull-board UI
+    queuePool.add(this.imageQueue);
 
     return {
       jobId: job.id,
