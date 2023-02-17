@@ -22,6 +22,7 @@ import { HealthModule } from './health/health.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { BullModule } from '@nestjs/bull';
 import { OptimizeImgModule } from './optimize_img/optimize_img.module';
+import { MessagesModule } from './messages/messages.module';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -149,6 +150,8 @@ const authenticate = async (email: string, password: string) => {
     HealthModule,
 
     OptimizeImgModule,
+
+    MessagesModule,
   ],
   controllers: [],
   providers: [

@@ -115,6 +115,10 @@
 
 // https://docs.nestjs.com/controllers#appendix-library-specific-approach
 
+// Websockets time:
+// npm i @nestjs/websockets @nestjs/platform-socket.io
+// nest g resource messages
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
