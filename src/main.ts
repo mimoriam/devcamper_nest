@@ -119,6 +119,19 @@
 // npm i @nestjs/websockets @nestjs/platform-socket.io
 // nest g resource messages
 
+// Finding circular dependencies in NestJS:
+// npm i -D madge
+// npx madge --circular src/main.ts
+// npx madge --circular --image graph.svg src/main.ts
+// Found 3:
+// 1) bootcamps/entities/bootcamp.entity.ts > courses/entities/course.entity.ts
+// 2) users/entities/user.entity.ts > bootcamps/entities/bootcamp.entity.ts > courses/entities/course.entity.ts
+// 3) users/entities/user.entity.ts > bootcamps/entities/bootcamp.entity.ts
+
+// Fix:
+// https://github.com/typeorm/typeorm/issues/4526#issuecomment-1076462998
+// https://github.com/typeorm/typeorm/issues/4190
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -129,7 +142,7 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: ['http://localhost:8000', 'http://localhost:3000'],
+      origin: ['http://localhost:8000', 'http://localhost:3000', 'http://localhost:3001'],
       credentials: true,
     },
   });
@@ -164,7 +177,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(3002);
 }
 
 bootstrap().then();

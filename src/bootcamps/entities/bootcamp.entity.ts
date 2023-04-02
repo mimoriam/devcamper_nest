@@ -152,13 +152,13 @@ export class Bootcamp extends BaseEntity {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @OneToMany(() => Course, (course) => course.bootcamp, {
+  @OneToMany('Course', 'bootcamp', {
     cascade: true,
     eager: true,
   })
   courses: Course[];
 
-  @ManyToOne(() => User, (user) => user.bootcamps, {
+  @ManyToOne('User', 'bootcamps', {
     // nullable: true,
     onDelete: 'CASCADE',
   })

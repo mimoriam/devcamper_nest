@@ -54,13 +54,13 @@ export class Course extends BaseEntity {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @ManyToOne(() => Bootcamp, (bootcamp) => bootcamp.courses, {
+  @ManyToOne('Bootcamp', 'courses', {
     // nullable: true,
     onDelete: 'CASCADE',
   })
   bootcamp: Bootcamp;
 
-  @ManyToOne(() => User, (user) => user.courses, {
+  @ManyToOne('User', 'courses', {
     // nullable: true,
     onDelete: 'CASCADE',
   })

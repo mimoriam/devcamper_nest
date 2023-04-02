@@ -58,12 +58,12 @@ export class AuthenticationController {
       signInDto,
     );
     response.cookie('accessToken', accessToken, {
-      // secure: true,
+      secure: true,
       httpOnly: true,
       sameSite: true,
     });
     response.cookie('refreshToken', refreshToken, {
-      // secure: true,
+      secure: true,
       httpOnly: true,
       sameSite: true,
     });

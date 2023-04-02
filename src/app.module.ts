@@ -45,7 +45,7 @@ const authenticate = async (email: string, password: string) => {
   imports: [
     ThrottlerModule.forRoot({
       ttl: 10 * 60 * 1000, // 10 mins
-      limit: 100,
+      limit: 100000,
     }),
     ConfigModule.forRoot({
       isGlobal: true,
